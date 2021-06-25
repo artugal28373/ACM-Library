@@ -1,0 +1,101 @@
+/// Aho-Corasic tree
+#include<bits/stdc++.h>
+#define mxn 1111 /// number of possible nodes
+#define ll long long
+#define mod 1000003ll
+using namespace std;
+int par[mxn], child[mxn][26], fail[mxn], now[55], sz[55], len[55], cnt;
+char txt[55][22];
+int val[mxn];
+void insrt(int n) /// to insert texts
+{
+    /// initiating part starts here
+    cnt= 0;
+    memset(now, 0, sizeof now);
+    memset(len, 0, sizeof len);
+    memset(child[0], -1, sizeof child[0]);
+    /// ends here
+
+    queue<int>q;
+    for(int i=0; i<n; i++)
+    {
+        int l= txt[i][0]-'a';
+
+        if(child[0][l]==-1)
+        {
+            ++cnt;
+            memset(child[cnt], -1, sizeof child[cnt]);
+            child[0][l]= cnt;
+        }
+
+        now[i]= child[0][l];
+        len[i]++;
+        if(len[i]!=sz[i])q.push(i);
+        else val[ now[i] ]= 1;
+    }
+
+    while(!q.empty())
+    {
+        int i= q.front();q.pop();
+
+        int l= txt[i][ len[i] ]-'a';
+
+        if(child[ now[i] ][l]==-1)
+        {
+            ++cnt;
+            memset(child[cnt], -1, sizeof child[cnt]);
+            child[ now[i] ][l]= cnt;
+            par[cnt]= now[i];
+        }
+
+        now[i]= child[ now[i] ][l];
+
+        int x= fail[ par[ now[i] ] ];
+        while(x && child[x][l]==-1)x= fail[x];
+
+        if(child[x][l]!=-1)
+        fail[ now[i] ]= child[x][l];
+        else fail[ now[i] ]= 0;
+
+        len[i]++;
+        if(len[i]!=sz[i])q.push(i);
+        else val[ now[i] ]= 1;
+    }
+    return;
+}
+void func() /// call after marking endings
+{
+    for(int i=1; i<=cnt; i++)val[i]|= val[ fail[i] ];
+    return;
+}
+int traverse(int nw, int l) /// Traversing through the Aho-Corasic tree
+{
+    if(l>='a')l-= 'a';
+    else if(l>='A' && l<='Z')l-= 'A';
+    else if(l=='0')l= 'o'-'a';
+    else if(l=='1')l= 'i'-'a';
+    else if(l=='3')l= 'e'-'a';
+    else if(l=='5')l= 's'-'a';
+    else if(l=='7')l= 't'-'a';
+    else return 0;
+
+    if(child[nw][l]==-1)
+    {
+        while(nw && child[nw][l]==-1)nw= fail[nw];
+        if(child[nw][l]!=-1)nw= child[nw][l];
+    }
+    else nw= child[nw][l];
+
+    return nw;
+}
+int main()
+{
+    int n;
+    scanf("%d", &n);
+    for(int i=0; i<n; i++)
+    scanf("%s", txt[i]), sz[i]= strlen(txt[i]);
+    insrt(n);
+    func();
+
+    return 0;
+}
