@@ -65,6 +65,7 @@ void insrt(int n) /// to insert texts
 }
 void func() /// call after marking endings
 {
+    /// iteration can change, depends on how we mark i.e. fail->me OR me->fail 
     for(int i=1; i<=cnt; i++)val[i]|= val[ fail[i] ];
     return;
 }
