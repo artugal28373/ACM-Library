@@ -68,7 +68,7 @@ void func() /// call after marking endings
     for(int i=1; i<=cnt; i++)val[i]|= val[ fail[i] ];
     return;
 }
-int traverse(int nw, int l) /// Traversing through the Aho-Corasic tree
+int traverse(int nw, int l) /// traversing through the Aho-Corasic tree
 {
     if(l>='a')l-= 'a';
     else if(l>='A' && l<='Z')l-= 'A';
