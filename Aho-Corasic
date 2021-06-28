@@ -2,7 +2,6 @@
 #include<bits/stdc++.h>
 #define mxn 1111 /// number of possible nodes
 #define ll long long
-#define mod 1000003ll
 using namespace std;
 int par[mxn], child[mxn][26], fail[mxn], now[55], sz[55], len[55], cnt;
 char txt[55][22];
