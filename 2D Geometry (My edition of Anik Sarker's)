@@ -59,7 +59,7 @@ namespace Punctual {
 namespace Vectorial {
     double getDot (Vector a, Vector b) { return a.x * b.x + a.y * b.y; }
     double getCross (Vector a, Vector b) { return a.x * b.y - a.y * b.x; }
-    double getLength (Vector a) { return sqrt(getDot(a, a)); }
+    double getLength (Vector a) { return sqrt(getDot(a, a)); }/// to get point a to point b distance, call getPLength(b-a)
     double getPLength (Vector a) { return getDot(a, a); }
     double getAngle (Vector u) { return atan2(u.y, u.x); }
     double getSignedAngle (Vector a, Vector b) {return getAngle(b)-getAngle(a);}
@@ -101,6 +101,10 @@ namespace Linear {
         return true;
     }
 
+    double perpndicularProjection(Point a, Point b, Point p){ /// from point p to line(a, b)
+        Point edge= (b-a)/getLength(b-a);
+        return getDot(edge, p-a);
+    }
     double getDistanceToLine (Point p, Point a, Point b) { return fabs(getCross(b-a, p-a) / getLength(b-a)); }
     double getDistanceToSegment (Point p, Point a, Point b) {
         if (a == b) return getLength(p-a);
@@ -126,7 +130,7 @@ namespace Linear {
         if(onSegment(a1,b1,b2)) return true;
         if(onSegment(a2,b1,b2)) return true;
         if(onSegment(b1,a1,a2)) return true;
-        if(onSegment(b2,a1,a2)) return true;  //Case of touch
+        if(onSegment(b2,a1,a2)) return true;  ///Case of touching
 
         double c1=getCross(a2-a1, b1-a1), c2=getCross(a2-a1, b2-a1), c3=getCross(b2-b1, a1-b1), c4=getCross(b2-b1,a2-b1);
         return dcmp(c1)*dcmp(c2) < 0 && dcmp(c3)*dcmp(c4) < 0;
@@ -644,15 +648,11 @@ struct Star{
         return a-n*a2;
     }
 };
-Point p[5003], ch[5003];
 int main()
 {
-    using namespace Polygonal;
-
-    int n;
-    scanf("%d", &n);
-    for(int i=0; i<n; i++)p[i].read();
-    n= getConvexHull(p, n, ch);
-
+    using namespace Linear;
+    cerr<<perpndicularProjection(Point(0, 0), Point(2, 0), Point(-1, 1000))<<endl;
+    cerr<<perpndicularProjection(Point(0, 0), Point(2, 0), Point(0, 1000))<<endl;
+    cerr<<perpndicularProjection(Point(0, 0), Point(2, 0), Point(1, 1000))<<endl;
     return 0;
 }
