@@ -1,0 +1,24 @@
+#include<bits/stdc++.h>
+#include <ext/pb_ds/tree_policy.hpp>
+#include <ext/pb_ds/assoc_container.hpp>
+#include <functional>
+#define ll long long
+using namespace __gnu_pbds;
+using namespace std;
+typedef pair<int, int>pi;
+/// typename should be in places of 'pi'
+typedef tree<pi, null_type, less<pi>, rb_tree_tag, tree_order_statistics_node_update>ordered_set;
+int main()
+{
+    ordered_set st;
+    st.insert({1, 1});
+    st.insert({11, 1});
+    st.insert({3, 1});
+    st.erase({3, 1});
+    st.erase({3, 2});
+    cout<<st.size()<<endl;
+    cout<<(*st.find_by_order(0)).first<<endl;
+    cout << st.order_of_key({11, 1})<<endl;
+
+    return 0;
+}
