@@ -221,6 +221,7 @@ namespace Polygonal {
         return wn ? -1 : 1;
     }
 
+    /// Tested on: CF 682E
     Polygon biggestTriangle(Point* p, int n)/// p is a array containing Points of convexHull
     {
         Polygon ret;
@@ -258,6 +259,7 @@ namespace Polygonal {
         return ret;
     }
 
+    /// Tested on: UVA 12307
     pair<double, double> minimumEnclosingRectangle(Point *p, int n, Point *ch)
     {
         pair<double, double>ret= {1e9, 1e9};
