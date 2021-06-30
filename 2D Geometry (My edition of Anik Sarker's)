@@ -1,4 +1,5 @@
 #include <bits/stdc++.h>
+#pragma GCC optimize ("O2,unroll-loops")
 using namespace std;
 
 const double pi = 4 * atan(1);
@@ -101,12 +102,12 @@ namespace Linear {
         return true;
     }
 
-    double perpndicularProjection(Point a, Point b, Point p){ /// from point p to line(a, b)
+    double perpendicularProjection(Point p, Point a, Point b){ /// from point p to line(a, b)
         Point edge= (b-a)/getLength(b-a);
         return getDot(edge, p-a);
     }
-    double getDistanceToLine (Point p, Point a, Point b) { return fabs(getCross(b-a, p-a) / getLength(b-a)); }
-    double getDistanceToSegment (Point p, Point a, Point b) {
+    double getDistanceToLine(Point p, Point a, Point b) { return fabs(getCross(b-a, p-a) / getLength(b-a)); }
+    double getDistanceToSegment(Point p, Point a, Point b) {
         if (a == b) return getLength(p-a);
         Vector v1 = b - a, v2 = p - a, v3 = p - b;
         if (dcmp(getDot(v1, v2)) < 0) return getLength(v2);
@@ -186,7 +187,7 @@ namespace Polygonal {
         return ret;
     }
 
-    int getConvexHull (Point* p, int n, Point* ch) {
+    int getConvexHull (Point* p, int n, Point* ch){
         sort(p, p + n);
 
         /// preparing lower hull
@@ -254,6 +255,27 @@ namespace Polygonal {
             ret.push_back(p[i]), ret.push_back(p[j]), ret.push_back(p[k]);
         }
 
+        return ret;
+    }
+
+    pair<double, double> minimumEnclosingRectangle(Point *p, int n, Point *ch)
+    {
+        pair<double, double>ret= {1e9, 1e9};
+        n= getConvexHull(p, n, ch);
+        for(int i=0; i<n; i++)p[i]= ch[i];
+
+        int l= 1, r= 1, u= 1;
+        for(int i=0; i<n; i++)
+        {
+            while(perpendicularProjection(p[(r+1)%n], p[i], p[(i+1)%n])>perpendicularProjection(p[r%n], p[i], p[(i+1)%n]))r++;
+            while(u<r || getDistanceToLine(p[(u+1)%n], p[i], p[(i+1)%n])>getDistanceToLine(p[u%n], p[i], p[(i+1)%n]))u++;
+            while(l<u || perpendicularProjection(p[(l+1)%n], p[i], p[(i+1)%n])<perpendicularProjection(p[l%n], p[i], p[(i+1)%n]))l++;
+
+            double w= perpendicularProjection(p[r%n], p[i], p[(i+1)%n])-perpendicularProjection(p[l%n], p[i], p[(i+1)%n]);
+            double h= getDistanceToLine(p[u%n], p[i], p[(i+1)%n]);
+            ret.first= min(ret.first, w*h);
+            ret.second= min(ret.second, 2.0*(w+h));
+        }
         return ret;
     }
 
@@ -648,11 +670,19 @@ struct Star{
         return a-n*a2;
     }
 };
+Point p[100001], ch[100001];
 int main()
 {
     using namespace Linear;
-    cerr<<perpndicularProjection(Point(0, 0), Point(2, 0), Point(-1, 1000))<<endl;
-    cerr<<perpndicularProjection(Point(0, 0), Point(2, 0), Point(0, 1000))<<endl;
-    cerr<<perpndicularProjection(Point(0, 0), Point(2, 0), Point(1, 1000))<<endl;
+    using namespace Polygonal;
+
+    int n;
+    while(scanf("%d", &n) && n)
+    {
+        for(int i=0; i<n; i++)p[i].read();
+        pair<double, double> res= minimumEnclosingRectangle(p, n, ch);
+        printf("%.2f %.2f\n", res.first, res.second);
+    }
+
     return 0;
 }
