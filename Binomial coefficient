@@ -1,4 +1,5 @@
 Property:
-Sum of the squares:(nC0)^2+(nC1)^2+⋯+(nCn)^2=(2nCn)
-Weighted sum:1(nC1)+2(nC2)+⋯+n(nCn)=n2^(n−1)
-Connection with the Fibonacci numbers:(nC0)+(n−1C1)+⋯+(n−kCk)+⋯+(0Cn)=Fib(n+1)
+Sum of the squares: (nC0)^2+(nC1)^2+⋯+(nCn)^2=(2nCn)
+Weighted sum: 1(nC1)+2(nC2)+⋯+n(nCn)=n2^(n−1)
+Connection with the Fibonacci numbers: (nC0)+(n−1C1)+⋯+(n−kCk)+⋯+(0Cn)=Fib(n+1)
+Sum over n and k: for(k=0; k<=m; k++)∑(n+kCk)=(n+m+1Cm)
