@@ -1,4 +1,5 @@
 #include <bits/stdc++.h>
+#define inf 1e20
 #pragma GCC optimize ("O2,unroll-loops")
 using namespace std;
 
@@ -54,10 +55,12 @@ struct DirLine {
 };
 
 namespace Punctual {
-    double getDistance (Point a, Point b) { double x=a.x-b.x, y=a.y-b.y; return sqrt(x*x + y*y); }
+    double getDistance(Point a, Point b) { double x=a.x-b.x, y=a.y-b.y; return sqrt(x*x + y*y); }
 };
 
 namespace Vectorial {
+    bool cmpx(const Point &a, const Point &b){return a.x < b.x;}
+    bool cmpy(const Point &a, const Point &b){return a.y < b.y;}
     double getDot (Vector a, Vector b) { return a.x * b.x + a.y * b.y; }
     double getCross (Vector a, Vector b) { return a.x * b.y - a.y * b.x; }
     double getLength (Vector a) { return sqrt(getDot(a, a)); }/// to get point a to point b distance, call getPLength(b-a)
@@ -81,6 +84,7 @@ namespace ComplexVector {
 };
 
 namespace Linear {
+    using namespace Punctual;
     using namespace Vectorial;
 
     Line getLine (double x1, double y1, double x2, double y2) { return Line(y2-y1, x1-x2, y1*x2-x1*y2); }
@@ -100,6 +104,42 @@ namespace Linear {
         double k = getCross(w, u) / getCross(v, w);
         o = p + v * k;
         return true;
+    }
+
+    double closestPairPoint(Point* P, int n)
+    {
+        typedef set<Point, bool(*)(const Point&, const Point&)>setType;
+        typedef setType::iterator setIT;
+        setType s(&cmpy);
+
+        double ret= inf;
+        sort(P, P+n, cmpx);
+		for(int i=1; i<n; i++)
+        if(P[i-1].x==P[i].x && P[i-1].y==P[i].y)return 0.0;
+        s.clear();
+		for(int i=0; i<n; i++)s.insert(P[i]);
+		for(int i=0, idx=0; i<n; i++)
+		{
+			Point it= P[i];
+			while(it.x-P[idx].x>ret){
+				s.erase(P[idx]);idx++;
+            }
+			Point low= Point(it.x, it.y - ret);
+			Point high= Point(it.x, it.y + ret);
+			setIT lowest = s.lower_bound(low);
+			if(lowest!=s.end())
+			{
+				setIT highest= s.upper_bound(high);
+				for(setIT now= lowest; now!= highest; now++)
+				{
+					double cur= getDistance(*now, it);
+					if(cur==0)continue;
+					ret= min(ret, cur);
+				}
+			}
+			s.insert(it);
+		}
+		return ret;
     }
 
     double perpendicularProjection(Point p, Point a, Point b){ /// from point p to line(a, b)
@@ -672,19 +712,17 @@ struct Star{
         return a-n*a2;
     }
 };
-Point p[100001], ch[100001];
+Point p[100001];
 int main()
 {
     using namespace Linear;
-    using namespace Polygonal;
-
     int n;
-    while(scanf("%d", &n) && n)
+    while(scanf("%d", &n)==1 && n)
     {
-        for(int i=0; i<n; i++)p[i].read();
-        pair<double, double> res= minimumEnclosingRectangle(p, n, ch);
-        printf("%.2f %.2f\n", res.first, res.second);
+        for(int i=0; i<n; i++)scanf("%lf %lf", &p[i].x, &p[i].y);
+        double res= closestPairPoint(p, n);
+        if(res<10000.0)printf("%.4f\n", res);
+        else puts("INFINITY");
     }
-
     return 0;
 }
