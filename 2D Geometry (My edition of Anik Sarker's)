@@ -3,14 +3,14 @@
 #pragma GCC optimize ("O2,unroll-loops")
 using namespace std;
 
-const double pi = 4 * atan(1);
-const double eps = 1e-9;
+const double pi= 4*atan(1), eps= 1e-9;
 
 inline int dcmp (double x) { if (fabs(x) < eps) return 0; else return x < 0 ? -1 : 1; }
 double fix_acute(double th) {return th<-pi ? (th+2*pi): th>pi ? (th-2*pi) : th;}
 
 inline double getDistance (double x, double y) { return sqrt(x * x + y * y); }
 inline double torad(double deg) { return deg / 180 * pi; }
+
 
 struct Point {
     double x, y;
@@ -177,7 +177,7 @@ namespace Linear {
         return dcmp(c1)*dcmp(c2) < 0 && dcmp(c3)*dcmp(c4) < 0;
     }
     bool onLeft(DirLine l, Point p) { return dcmp(l.v * (p-l.p)) >= 0; }
-}
+};
 
 namespace Triangular {
     using namespace Vectorial;
@@ -203,12 +203,12 @@ namespace Triangular {
     }
 };
 
-namespace Polygonal {
+namespace Polygonal{
     using namespace Vectorial;
     using namespace Linear;
     using namespace Triangular;
 
-    double getSignedArea (Point* p, int n) {
+    double getSignedArea (Point* p, int n){
         double ret = 0;
         for (int i = 0; i < n-1; i++)
             ret += (p[i]-p[0]) * (p[i+1]-p[0]);
@@ -245,6 +245,19 @@ namespace Polygonal {
         }
         if (n > 1) m--;
         return m;
+    }
+
+    double diameter(Point* p, int n, Point* ch)
+    {
+        n= getConvexHull(p, n, ch);
+        double ret= 0;
+        for(int i=0, j=1; i<n; i++)
+        {
+            if(i==j)j= (j+1)%n;
+            while(getDistance(ch[i], ch[j])<getDistance(ch[i], ch[ (j+1)%n ]))j= (j+1)%n;
+            ret= max(ret, getDistance(ch[i], ch[j]));
+        }
+        return ret;
     }
 
     int isPointInPolygon(Point o, Point* p, int n) {
@@ -304,6 +317,7 @@ namespace Polygonal {
     {
         pair<double, double>ret= {1e9, 1e9};
         n= getConvexHull(p, n, ch);
+        if(n<3)return ret;
         for(int i=0; i<n; i++)p[i]= ch[i];
 
         int l= 1, r= 1, u= 1;
@@ -712,17 +726,13 @@ struct Star{
         return a-n*a2;
     }
 };
-Point p[100001];
+Point p[100005], ch[100005];
 int main()
 {
-    using namespace Linear;
+    using namespace Polygonal;
     int n;
-    while(scanf("%d", &n)==1 && n)
-    {
-        for(int i=0; i<n; i++)scanf("%lf %lf", &p[i].x, &p[i].y);
-        double res= closestPairPoint(p, n);
-        if(res<10000.0)printf("%.4f\n", res);
-        else puts("INFINITY");
-    }
+    scanf("%d", &n);
+    for(int i=0; i<n; i++)p[i].read();
+    printf("%.6f\n", diameter(p, n, ch));
     return 0;
 }
