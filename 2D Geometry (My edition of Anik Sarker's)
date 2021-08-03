@@ -3,7 +3,7 @@
 #pragma GCC optimize ("O2,unroll-loops")
 using namespace std;
 
-const double pi= 4*atan(1), eps= 1e-9;
+const double pi= 4*atan(1), eps= 1e-14;
 
 inline int dcmp (double x) { if (fabs(x) < eps) return 0; else return x < 0 ? -1 : 1; }
 double fix_acute(double th) {return th<-pi ? (th+2*pi): th>pi ? (th-2*pi) : th;}
@@ -38,6 +38,15 @@ struct Line {
     Line (double a = 0, double b = 0, double c = 0): a(a), b(b), c(c) {}
 };
 
+double toDeg(double rad){
+    return (rad*180.0)/pi;
+}
+double modifiedatan2(Point a){
+    double ret= atan2(a.y, a.x);
+    if(ret<0)ret+= 2*pi;
+    return toDeg(ret);
+}
+
 struct Segment{
     Point a;
     Point b;
@@ -59,8 +68,12 @@ namespace Punctual {
 };
 
 namespace Vectorial {
-    bool cmpx(const Point &a, const Point &b){return a.x < b.x;}
-    bool cmpy(const Point &a, const Point &b){return a.y < b.y;}
+    bool cmpX(const Point &a, const Point &b){return a.x < b.x;}
+    bool cmpY(const Point &a, const Point &b){return a.y < b.y;}
+    bool cmpAngle(const Point &a, const Point &b){
+    /// sorts by angle (counter-clock wise by radian)
+        return modifiedatan2(a)<modifiedatan2(b);
+    }
     double getDot (Vector a, Vector b) { return a.x * b.x + a.y * b.y; }
     double getCross (Vector a, Vector b) { return a.x * b.y - a.y * b.x; }
     double getLength (Vector a) { return sqrt(getDot(a, a)); }/// to get point a to point b distance, call getPLength(b-a)
@@ -110,10 +123,10 @@ namespace Linear {
     {
         typedef set<Point, bool(*)(const Point&, const Point&)>setType;
         typedef setType::iterator setIT;
-        setType s(&cmpy);
+        setType s(&cmpY);
 
         double ret= inf;
-        sort(P, P+n, cmpx);
+        sort(P, P+n, cmpX);
 		for(int i=1; i<n; i++)
         if(P[i-1].x==P[i].x && P[i-1].y==P[i].y)return 0.0;
         s.clear();
@@ -275,7 +288,7 @@ namespace Polygonal{
     }
 
     /// Tested on: CF 682E
-    Polygon biggestTriangle(Point* p, int n)/// p is a array containing Points of convexHull
+    Polygon maximumEnclosingTriangle(Point* p, int n)/// p is a array containing Points of convexHull
     {
         Polygon ret;
         if(n<3)return ret;
@@ -313,7 +326,7 @@ namespace Polygonal{
     }
 
     /// Tested on: UVA 12307
-    pair<double, double> minimumEnclosingRectangle(Point *p, int n, Point *ch)
+    pair<double, double>minimumEnclosingRectangle(Point *p, int n, Point *ch)
     {
         pair<double, double>ret= {1e9, 1e9};
         n= getConvexHull(p, n, ch);
@@ -726,13 +739,7 @@ struct Star{
         return a-n*a2;
     }
 };
-Point p[100005], ch[100005];
 int main()
 {
-    using namespace Polygonal;
-    int n;
-    scanf("%d", &n);
-    for(int i=0; i<n; i++)p[i].read();
-    printf("%.6f\n", diameter(p, n, ch));
     return 0;
 }
