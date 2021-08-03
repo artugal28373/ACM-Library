@@ -1,0 +1,57 @@
+#include<bits/stdc++.h>
+#define N 1000000
+#define logN 25
+#define ll long long
+using namespace std;
+
+int phi[N+2];
+void eulerTotient()/// phi[i] - number of co-primes from 1 to i-1
+{
+    for(int i=2; i<=N; i++)phi[i]= i;
+    for(int i=2; i<=N; i++)
+    if(phi[i]==i)
+    {
+        phi[i]--;
+        for(int j=2*i; j<=N; j+=i)
+        phi[j]/= i, phi[j]*= (i-1);
+    }
+    return;
+}
+
+ll phiSum[N+2];
+int d[logN*N], nxt[logN*N], lst[N+2];
+void eulerTotientSum()///phiSum[i] - sum of numbers from 1 to i that are co-prime with i
+{
+    for(int i=2; i<=N; i++)lst[i]= i;
+
+    /// storing divisors
+    for(int i=2, idx= N; i<=N; i++)
+    for(int j=i; j<=N; j+=i)
+    {
+        idx++;
+        d[idx]= i;
+        nxt[ lst[j] ]= idx;
+        nxt[idx]= -1;
+        lst[j]= idx;
+    }
+
+    phiSum[1]= 1;
+    for(int j=2; j<=N; j++)
+    {
+        phiSum[j]= (j*1ll*(j+1))/2;
+        int now= nxt[j];
+        while(now!=-1)
+        {
+            int x= d[now];
+            phiSum[j]-= phiSum[j/x]*1ll*x;
+            now= nxt[now];
+        }
+    }
+    return;
+}
+int main()
+{
+    eulerTotient();
+    eulerTotientSum();
+    return 0;
+}
