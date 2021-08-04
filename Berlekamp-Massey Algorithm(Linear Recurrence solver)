@@ -4,7 +4,7 @@ using namespace std;
 #define pb push_back
 typedef long long ll;
 #define SZ 233333
-const int MOD=1e9+7; //or any prime
+const int MOD=1e9+7; //or any prime according to problem
 ll qp(ll a,ll b)
 {
 	ll x=1; a%=MOD;
@@ -100,5 +100,6 @@ inline int work(vector<int> x,ll n)
 using linear_seq::work;
 int main()
 {
+        /// 0-indexing needed
 	cout<<work({1,1,2,3,5,8,13,21},10)<<"\n";
 }
