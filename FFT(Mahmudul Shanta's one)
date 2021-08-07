@@ -82,8 +82,9 @@ namespace FFT {
         fft(f1, k);
         vi r(ABsize);
         int Rsize=(int)(r.size());
-        for(int i = 0; i < Rsize; i++)
-        r[i] = ll(f1[i].re / n + 0.5);
+        for(int i = 0; i < Rsize; i++)r[i] = ll(f1[i].re / n + 0.5);
+        /// In case you only need how many distinct entities exist, do the below
+        /// for(int i = 0; i < Rsize; i++)r[i]= min(r[i], 1ll);
         return r;
     }
 }
