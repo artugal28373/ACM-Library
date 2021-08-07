@@ -91,7 +91,5 @@ namespace FFT {
 int32_t main()
 {
     using namespace FFT;
-    /// send vector a, b(reversed) to mul()
-    /// which returns vector c(reversed)
     return 0;
 }
