@@ -1,0 +1,47 @@
+#include<bits/stdc++.h>
+#pragma GCC optimize ("O2,unroll-loops")
+#define N 250
+using namespace std;
+struct Edge{int v, flow, C, rev;};
+vector<Edge>adj[N];
+int level[N], start[N], V;/// V - Total nodes
+void addEdge(int u, int v, int C){
+    Edge a{v, 0, C, adj[v].size()};
+    Edge b{u, 0, 0, adj[u].size()};
+    adj[u].push_back(a);adj[v].push_back(b);
+}
+bool BFS(int s, int t){
+    for(int i=0 ; i<V ; i++)level[i]= -1*(i!=s);
+    queue<int>q;q.push(s);
+    while(!q.empty()){
+        int u= q.front();q.pop();
+        for(int i=0; i<adj[u].size(); i++){
+            Edge e= adj[u][i];
+            if(level[e.v]<0  && e.flow<e.C)
+            level[e.v]= level[u]+1, q.push(e.v);
+        }
+    }return !(level[t]<0);
+}
+int sendFlow(int u, int flow, int t){
+    if(u==t)return flow;
+    for(int i=start[u]; i<adj[u].size(); i++){
+        Edge &e= adj[u][i];
+        if(level[e.v]==level[u]+1 && e.flow<e.C){
+            int curr_flow= min(flow, e.C-e.flow);
+            int temp_flow= sendFlow(e.v, curr_flow, t);
+            if(temp_flow>0){
+                e.flow+= temp_flow;
+                adj[e.v][e.rev].flow-= temp_flow;
+                return temp_flow;
+            }
+        }start[u]++;
+    }return 0;
+}
+int DinicMaxflow(int s, int t){///source, sink
+    if(s==t)return -1;/// Invalid
+    int total= 0;
+    while(bool x= BFS(s, t) == true){
+        memset(start, 0, sizeof start);
+        while(int f= sendFlow(s, INT_MAX, t))total += f;
+    }return total;
+}
