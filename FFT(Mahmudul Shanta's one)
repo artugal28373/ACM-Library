@@ -3,6 +3,7 @@
 #define _USE_MATH_DEFINES
 #define PI acos(-1)
 #define int long long
+#define MOD 1000000007
 using namespace std;
 
 typedef vector<int>vi;
@@ -21,8 +22,8 @@ namespace FFT {
         base conj() const { return base(re, -im); }
     };
 
-    const int N = 21;/// log(actual size)+2
-    const int MAXN = (1 << N);
+    const int N = 20;/// log(actual size)+2
+    const int MAXN = (1 << N)+5;
     base w[MAXN];
     base f1[MAXN];
     int rev[MAXN];
@@ -39,7 +40,7 @@ namespace FFT {
         }
     }
 
-    void fft(base *a, int k) {
+    void fft(base *a, int k){
         build_rev(k);
         int n = 1 << k;
         for (int i = 0; i < n; i++) if (rev[i] > i) swap(a[i], a[rev[i]]);
@@ -62,7 +63,7 @@ namespace FFT {
 
     vi mul(const vi& a, const vi& b) {
         int k = 1;
-        int ABsize=(int)(a.size()) + (int)(b.size());
+        int ABsize= (int)(a.size()) + (int)(b.size());
         while ((1 << k) < ABsize) ++k;
         int n = (1 << k);
         for (int i = 0; i < n; i++) f1[i] = base(0, 0);
@@ -83,13 +84,47 @@ namespace FFT {
         vi r(ABsize);
         int Rsize=(int)(r.size());
         for(int i = 0; i < Rsize; i++)r[i] = round(f1[i].re/(double)n);
-        /// In case you only need how many distinct entities exist, do the below
+        /// IN case you only need distinct entities, not number of ways, do the below:
         /// for(int i = 0; i < Rsize; i++)r[i]= min(r[i], 1ll);
         return r;
     }
 }
+
+inline int binpow(int a, int n){
+    int res = 1;
+    while(n){
+        if(n & 1)res = 1LL * res * a % MOD;
+        a= (1LL*a*a)% MOD;
+        n>>= 1;
+    }return res;
+}
+
+void FWHT(int *x, int n, bool inverse){
+    for(int len = 1; 2 * len <= n; len <<= 1){
+        for(int i = 0; i < n; i += 2 * len){
+            for(int j = 0; j < len; j++){
+                int u = x[i + j], v = x[i + len + j];
+                x[i + j] = u + v;
+                if(x[i + j] >= MOD)x[i + j] -= MOD;
+                x[i + len + j] = u - v;
+                if(x[i + len + j] < 0)x[i + len + j] += MOD;
+                if(x[i + len + j] >= MOD)x[i + len + j] -= MOD;
+            }
+        }
+    }
+    if(inverse){
+        int rev_n = binpow(n, MOD - 2);
+        for(int i = 0; i < n; i++)x[i] = 1LL * x[i] * rev_n % MOD;
+    }
+    return;
+}
+int p[(1<<(21))], q[(1<<(21))];
 int32_t main()
 {
     using namespace FFT;
+    /// Transform p
+    /// Transform q
+    /// r= Multiplying p*q(point to point)
+    /// inverse transform r
     return 0;
 }
