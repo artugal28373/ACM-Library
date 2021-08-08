@@ -122,6 +122,8 @@ int p[(1<<(21))], q[(1<<(21))];
 int32_t main()
 {
     using namespace FFT;
+    /// FFT- for all possible sum
+    /// FWHT- for all possible Xorsum
     /// For FWHT, do the following:
     /// Transform p, q
     /// r= Multiplying p*q(point to point)
