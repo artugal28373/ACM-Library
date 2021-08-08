@@ -45,3 +45,8 @@ int DinicMaxflow(int s, int t){///source, sink
         while(int f= sendFlow(s, INT_MAX, t))total += f;
     }return total;
 }
+int main()
+{
+    ///DinicMaxflow(source, sink);
+    return 0;
+}
